@@ -1,0 +1,94 @@
+/* EduCompanion Color Variables */
+:root {
+  /* Logo Colors */
+  --primary-green: #00b894;
+  --primary-blue: #0984e3;
+  
+  /* Gradient Definitions */
+  --logo-gradient: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+  --logo-gradient-reverse: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+  
+  /* Background Colors */
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  
+  /* Border Colors */
+  --border-primary: #333333;
+  --border-accent: var(--primary-green);
+  
+  /* Shadow Effects */
+  --shadow-green: rgba(0, 184, 148, 0.15);
+  --shadow-blue: rgba(9, 132, 227, 0.15);
+  --shadow-combined: 0 8px 20px var(--shadow-green), 0 4px 10px var(--shadow-blue);
+  
+  /* Glow Effects */
+  --glow-green: 0 0 8px var(--shadow-green);
+  --glow-blue: 0 0 8px var(--shadow-blue);
+  --glow-combined: 0 0 12px var(--shadow-green), 0 0 20px var(--shadow-blue);
+  
+  /* Hover Effects */
+  --hover-bg-green: rgba(0, 184, 148, 0.1);
+  --hover-bg-blue: rgba(9, 132, 227, 0.1);
+  --hover-bg-combined: linear-gradient(135deg, var(--hover-bg-green), var(--hover-bg-blue));
+  
+  /* Animations */
+  --transition-default: all 0.3s ease;
+  --transition-slow: all 0.5s ease;
+}
+
+/* Global Flash Animation */
+@keyframes flash-glow {
+  0%, 100% {
+    box-shadow: var(--glow-green);
+  }
+  50% {
+    box-shadow: 0 0 6px var(--shadow-green), 0 0 12px var(--shadow-blue);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background: var(--logo-gradient);
+  }
+  50% {
+    background: var(--logo-gradient-reverse);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Utility Classes */
+.flash-effect {
+  animation: flash-glow 2s ease-in-out infinite;
+}
+
+.gradient-text {
+  background: var(--logo-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: var(--logo-gradient);
+}
+
+.glow-hover:hover {
+  box-shadow: var(--glow-combined) !important;
+  transition: var(--transition-default);
+}

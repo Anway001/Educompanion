@@ -1,0 +1,317 @@
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #121212;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Add extra left padding when sidebar is open */
+.sidebar-open .main-content {
+  padding-left: 80px;
+}
+
+
+
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 1200px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(0, 184, 148, 0.15) 0%, rgba(9, 132, 227, 0.15) 50%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: -1;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Animated Background */
+.page-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(0, 184, 148, 0.08), rgba(9, 132, 227, 0.08));
+  animation: float-main 10s ease-in-out infinite;
+}
+
+.floating-shape.shape-1 {
+  width: 120px;
+  height: 120px;
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.floating-shape.shape-2 {
+  width: 180px;
+  height: 180px;
+  top: 50%;
+  right: 12%;
+  animation-delay: 3s;
+}
+
+.floating-shape.shape-3 {
+  width: 90px;
+  height: 90px;
+  bottom: 25%;
+  left: 20%;
+  animation-delay: 6s;
+}
+
+.floating-shape.shape-4 {
+  width: 140px;
+  height: 140px;
+  top: 25%;
+  right: 35%;
+  animation-delay: 1.5s;
+}
+
+@keyframes float-main {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.1;
+  }
+  50% {
+    transform: translateY(-25px) rotate(180deg);
+    opacity: 0.3;
+  }
+}
+
+.main-header, .welcome-section, .chat-section, .features-grid {
+    position: relative;
+    z-index: 1;
+}
+
+.main-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info span {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  border-radius: 15px;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+  font-size: 48px;
+  margin: 0;
+  background: linear-gradient(135deg, #00b894, #0984e3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+.welcome-section h2 {
+    font-size: 48px;
+    margin: 0;
+    background: linear-gradient(135deg, #00b894, #0984e3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% {
+        background: linear-gradient(135deg, #00b894, #0984e3);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    50% {
+        background: linear-gradient(135deg, #0984e3, #00b894);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+.welcome-section p {
+  color: #a0a0a0;
+}
+
+.chat-section {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.quick-actions {
+  margin-bottom: 20px;
+}
+
+.quick-actions button {
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(9, 132, 227, 0.1));
+  color: #00b894;
+  border: 1px solid rgba(0, 184, 148, 0.3);
+  padding: 8px 15px;
+  border-radius: 15px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-actions button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.quick-actions button:hover::before {
+  left: 100%;
+}
+
+.quick-actions button:hover {
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.2), rgba(9, 132, 227, 0.2));
+  border-color: #00b894;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 184, 148, 0.2);
+}
+
+.chat-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-input input {
+  width: 50%;
+  padding: 15px;
+  border-radius: 25px;
+  border: 1px solid #333;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  margin-right: 10px;
+}
+
+.chat-input button {
+  background: linear-gradient(135deg, #00b894, #0984e3);
+  color: #ffffff;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+}
+
+.chat-input button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.chat-input button:hover::before {
+  left: 100%;
+}
+
+.chat-input button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 184, 148, 0.25);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  background-color: #1a1a1a;
+  padding: 16px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid #333;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(9, 132, 227, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.feature-card:hover {
+    box-shadow: 0 0 15px rgba(0, 184, 148, 0.3), 0 0 25px rgba(9, 132, 227, 0.2);
+    border-color: #00b894;
+    transform: translateY(-5px);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-card p {
+  color: #a0a0a0;
+  margin-bottom: 0;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}

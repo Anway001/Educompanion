@@ -1,0 +1,133 @@
+.settings-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #121212;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Add extra left padding when sidebar is open */
+.sidebar-open .settings-content {
+  padding-left: 80px;
+}
+
+.settings-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 1200px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(0, 184, 148, 0.1) 0%, rgba(9, 132, 227, 0.1) 50%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Animated Background */
+.page-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(0, 184, 148, 0.05), rgba(9, 132, 227, 0.05));
+  animation: float-settings 16s ease-in-out infinite;
+}
+
+.floating-shape.shape-1 {
+  width: 130px;
+  height: 130px;
+  top: 25%;
+  right: 10%;
+  animation-delay: 0s;
+}
+
+.floating-shape.shape-2 {
+  width: 180px;
+  height: 180px;
+  top: 60%;
+  left: 15%;
+  animation-delay: 6s;
+}
+
+.floating-shape.shape-3 {
+  width: 95px;
+  height: 95px;
+  bottom: 25%;
+  right: 30%;
+  animation-delay: 12s;
+}
+
+.floating-shape.shape-4 {
+  width: 150px;
+  height: 150px;
+  top: 15%;
+  left: 25%;
+  animation-delay: 3s;
+}
+
+@keyframes float-settings {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.06;
+  }
+  50% {
+    transform: translateY(-28px) rotate(180deg);
+    opacity: 0.18;
+  }
+}
+
+.settings-header, .welcome-section {
+    position: relative;
+    z-index: 1;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info span {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  border-radius: 15px;
+  color: #ffffff;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+  font-size: 48px;
+  margin: 0;
+  color: #ffffff;
+}
+
+.welcome-section h2 {
+    font-size: 48px;
+    margin: 0;
+    color: #ffffff;
+}
+
+.welcome-section p {
+  color: #a0a0a0;
+}

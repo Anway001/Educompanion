@@ -1,0 +1,273 @@
+.videos-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #121212;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Add extra left padding when sidebar is open */
+.sidebar-open .videos-content {
+  padding-left: 80px;
+}
+
+.videos-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 1200px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(0, 184, 148, 0.1) 0%, rgba(9, 132, 227, 0.1) 50%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Animated Background */
+.page-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(0, 184, 148, 0.06), rgba(9, 132, 227, 0.06));
+  animation: float-videos 12s ease-in-out infinite;
+}
+
+.floating-shape.shape-1 {
+  width: 160px;
+  height: 160px;
+  top: 10%;
+  right: 15%;
+  animation-delay: 0s;
+}
+
+.floating-shape.shape-2 {
+  width: 100px;
+  height: 100px;
+  top: 65%;
+  left: 8%;
+  animation-delay: 4s;
+}
+
+.floating-shape.shape-3 {
+  width: 200px;
+  height: 200px;
+  bottom: 20%;
+  right: 25%;
+  animation-delay: 8s;
+}
+
+.floating-shape.shape-4 {
+  width: 120px;
+  height: 120px;
+  top: 35%;
+  left: 30%;
+  animation-delay: 2s;
+}
+
+@keyframes float-videos {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+    opacity: 0.25;
+  }
+}
+
+.videos-header, .welcome-section {
+    position: relative;
+    z-index: 1;
+}
+
+.videos-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info span {
+  padding: 8px 12px;
+  background-color: #2a2a2a;
+  border-radius: 15px;
+  color: #ffffff;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+  font-size: 48px;
+  margin: 0;
+  color: #ffffff;
+}
+
+.welcome-section h2 {
+    font-size: 48px;
+    margin: 0;
+    color: #ffffff;
+}
+
+.welcome-section p {
+  color: #a0a0a0;
+}
+
+/* Upload Section Styles */
+.upload-section {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.upload-description {
+  font-size: 18px;
+  color: #a0a0a0;
+  margin-bottom: 30px;
+}
+
+.upload-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.toggle-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.toggle-btn.active {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.file-upload-area {
+  margin-bottom: 30px;
+}
+
+.drop-zone {
+  border: 2px dashed #cccccc;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.drop-zone h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0 0 10px 0;
+}
+
+.drop-zone p {
+  font-size: 16px;
+  color: #666666;
+  margin: 0 0 30px 0;
+}
+
+.file-input {
+  display: none;
+}
+
+.choose-files-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.choose-files-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.notes-input-area {
+  margin-bottom: 30px;
+}
+
+.notes-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 16px;
+  resize: vertical;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.submit-btn {
+  padding: 16px 32px;
+  background-color: #17a2b8;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submit-btn:hover {
+  background-color: #138496;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.app-layout {
+  display: flex;
+  background-color: #121212;
+  height: 100vh;
+}
+
+.app {
+  display: flex;
+  flex: 1;
+  margin-left: 80px; /* Space for vertical navbar */
+  background-color: #121212;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.app.sidebar-open {
+  margin-left: 360px; /* 80px navbar + 280px sidebar */
+}
+
+.main-content-area {
+  margin-left: 80px; /* Space for vertical navbar */
+  width: calc(100% - 80px);
+  background-color: #121212;
+}

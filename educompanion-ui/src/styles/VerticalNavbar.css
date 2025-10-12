@@ -1,0 +1,95 @@
+.vertical-navbar {
+  width: 80px;
+  background-color: #121212;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  border-right: 1px solid #333;
+}
+
+.nav-brand .logo {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 30px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 4px 12px rgba(0, 184, 148, 0.3));
+}
+
+.nav-brand .logo:hover {
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 4px 12px rgba(0, 184, 148, 0.3));
+}
+
+.nav-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nav-link {
+  color: #e0e0e0;
+  text-decoration: none;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  font-size: inherit;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(9, 132, 227, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+  opacity: 1;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background-color: #1a1a1a;
+  color: white;
+  border-color: #00b894;
+  box-shadow: 0 0 10px rgba(0, 184, 148, 0.4), 0 0 20px rgba(9, 132, 227, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-link svg {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover svg,
+.nav-link.active svg {
+  filter: drop-shadow(0 0 4px rgba(0, 184, 148, 0.6));
+}
