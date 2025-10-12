@@ -276,3 +276,7 @@ def handle_podcast_generation(notes_text=None, file=None, length='medium'):
     
     print(f"--- Workflow Complete: Podcast generated at {podcast_path} ---")
     return {"path": podcast_path, "filename": podcast_file_name}, 200
+
+if __name__ == '__main__':
+  # Keep debug mode on, but disable the reloader that causes the conflict
+  app.run(debug=True, use_reloader=False)
