@@ -1,0 +1,40 @@
+.visuals-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #121212;
+  color: #ffffff;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.visuals-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.visuals-header h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.visuals-results {
+    margin-top: 40px;
+}
+
+.visuals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.visuals-grid img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* Reusing styles from PodcastPage.css */
+.page-background, .floating-shape, .upload-section, .file-upload-area, .drop-zone, .upload-icon, .file-input, .choose-files-btn, .submit-btn, .status-message, .divider {
+    /* These styles are assumed to be similar to PodcastPage.css */
+}

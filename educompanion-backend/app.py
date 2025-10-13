@@ -16,17 +16,23 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))
     
     # Initialize extensions
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     JWTManager(app)
     
     # Import and register blueprints
     from routes.auth import auth_bp
     from routes.user import user_bp
-    from routes.podcast import podcast_bp # Ensure this is the correct path to your blueprint
-    
+    from routes.podcast import podcast_bp
+    from routes.visuals import visuals_bp
+
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(user_bp, url_prefix='/api/user')
     app.register_blueprint(podcast_bp, url_prefix='/api/podcast')
+    app.register_blueprint(visuals_bp, url_prefix='/api/visuals')
+
+    print("Registered Blueprints:")
+    for bp_name, bp in app.blueprints.items():
+        print(f"- {bp_name} at {bp.url_prefix}")
     
     # Basic route for testing
     @app.route('/')
@@ -38,11 +44,3 @@ def create_app():
         return {'status': 'healthy', 'message': 'Backend is working correctly!'}
     
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-    host = os.getenv('HOST', '0.0.0.0')
-    port = int(os.getenv('PORT', 8080)) # Matching port to your previous logs
-    
-    # MODIFIED: Added use_reloader=False to prevent conflicts with multiprocessing.
-    app.run(host=host, port=port, debug=True, use_reloader=False)

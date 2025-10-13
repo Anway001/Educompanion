@@ -21,7 +21,7 @@ class Database:
             
             # Test the connection
             self.client.admin.command('ping')
-            print("✅ Successfully connected to MongoDB!")
+            print("Successfully connected to MongoDB!")
             
             # Get database
             self.db = self.client[db_name]
@@ -32,7 +32,7 @@ class Database:
             return True
             
         except Exception as e:
-            print(f"❌ Error connecting to MongoDB: {e}")
+            print(f"Error connecting to MongoDB: {e}")
             return False
     
     def _create_collections(self):
@@ -42,7 +42,7 @@ class Database:
         for collection_name in collections:
             if collection_name not in self.db.list_collection_names():
                 self.db.create_collection(collection_name)
-                print(f"✅ Created collection: {collection_name}")
+                print(f"Created collection: {collection_name}")
     
     def get_db(self):
         """Get database instance"""
@@ -52,7 +52,7 @@ class Database:
         """Close MongoDB connection"""
         if self.client:
             self.client.close()
-            print("🔌 MongoDB connection closed")
+            print("MongoDB connection closed")
 
 # Global database instance
 db_instance = Database()

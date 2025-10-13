@@ -5,12 +5,12 @@ import os
 
 def main():
     """Main function to run the application"""
-    print("🚀 Starting EduCompanion Backend...")
+    print("Starting EduCompanion Backend...")
     
     # Connect to database
-    print("📡 Connecting to MongoDB...")
+    print("Connecting to MongoDB...")
     if not db_instance.connect():
-        print("❌ Failed to connect to MongoDB. Please check your connection settings.")
+        print("Failed to connect to MongoDB. Please check your connection settings.")
         return
     
     # Create Flask app
@@ -24,9 +24,9 @@ def main():
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
     
-    print(f"🌐 Starting server on {host}:{port}")
-    print(f"🔧 Debug mode: {'ON' if debug else 'OFF'}")
-    print("✅ Server is running! Press Ctrl+C to stop.")
+    print(f"Starting server on {host}:{port}")
+    print(f"Debug mode: {'ON' if debug else 'OFF'}")
+    print("Server is running! Press Ctrl+C to stop.")
     
     try:
         # Run the application

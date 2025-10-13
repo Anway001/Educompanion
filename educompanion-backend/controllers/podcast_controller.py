@@ -28,7 +28,7 @@ print("Loading EasyOCR model...")
 ocr_reader = easyocr.Reader(['en'], gpu=(DEVICE == "cuda"))
 
 print("Loading summarization model...")
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn", device=0 if DEVICE == "cuda" else -1)
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", device=0 if DEVICE == "cuda" else -1)
 
 voice_ids = {"HOST": None, "GUEST": None}
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Sidebar.css';
 
 const Sidebar = ({ show }) => {
@@ -15,8 +16,9 @@ const Sidebar = ({ show }) => {
       </div>
       <nav className="sidebar-nav">
         <ul>
-          <li><a href="#ask">Ask EduCompanion</a></li>
-          <li><a href="#explore">Explore</a></li>
+          <li><Link to="/">Ask EduCompanion</Link></li>
+          <li><Link to="/explore">Explore</Link></li>
+          <li><Link to="/visuals">Visuals</Link></li>
         </ul>
       </nav>
       <div className="sidebar-recents">

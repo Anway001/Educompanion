@@ -79,30 +79,7 @@ const PodcastPage = () => {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setPodcastUrl(url);
-      setStatusMessage('Podcast generated successfully! Saving to notes...');
-
-      // --- Save Podcast Metadata ---
-      try {
-        const title = selectedFiles.length > 0 
-          ? selectedFiles[0].name.replace(/\.[^/.]+$/, "") 
-          : "Podcast from Notes";
-        const date = new Date().toISOString().split('T')[0];
-        const metadata = { title, date, preview: "An AI-generated podcast." };
-
-        await fetch('http://localhost:8080/api/podcast/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // MODIFIED: Also send the token when saving
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(metadata),
-        });
-        setStatusMessage('Podcast saved to your notes!');
-      } catch (saveError) {
-        setStatusMessage('Podcast generated, but failed to save to notes.');
-      }
-      // ---
+      setStatusMessage('Podcast generated successfully!');
 
     } catch (error) {
       console.error('Error:', error);
@@ -110,6 +87,33 @@ const PodcastPage = () => {
       setStatusMessage('Failed to generate podcast. Check console for details.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error("Authentication Error. Please log in again.");
+      }
+
+      const title = selectedFiles.length > 0 
+        ? selectedFiles[0].name.replace(/\.[^/.]+$/, "") 
+        : "Podcast from Notes";
+      const date = new Date().toISOString().split('T')[0];
+      const metadata = { title, date, preview: "An AI-generated podcast." };
+
+      await fetch('http://localhost:8080/api/podcast/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(metadata),
+      });
+      setStatusMessage('Podcast saved to your notes!');
+    } catch (saveError) {
+      setStatusMessage('Failed to save podcast to notes.');
     }
   };
 
@@ -178,6 +182,7 @@ const PodcastPage = () => {
             <h3>Your Podcast is Ready!</h3>
             <audio controls src={podcastUrl} className="podcast-player"></audio>
             <a href={podcastUrl} download={`podcast_${Date.now()}.mp3`} className="download-btn">Download Podcast</a>
+            <button onClick={handleSave} className="download-btn">Save Podcast</button>
           </div>
         )}
       </div>

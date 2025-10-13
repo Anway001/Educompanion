@@ -1,7 +1,10 @@
-from flask import Blueprint, request, jsonify, send_file, send_from_directory
+from flask import Blueprint, request, jsonify, send_file, send_from_directory, current_app
 from controllers.podcast_controller import handle_podcast_generation
 # NEW: Import tools from Flask-JWT-Extended
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from models.saved_podcast import SavedPodcast
+from config.database import db_instance
+import uuid
 import os, shutil, datetime
 
 podcast_bp = Blueprint('podcast', __name__)
@@ -11,11 +14,8 @@ SAVED_PODCASTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'generated', 
 os.makedirs(SAVED_PODCASTS_DIR, exist_ok=True)
 # ------------------------------------
 
-# --- TEMPORARY IN-MEMORY DATABASE ---
-# This list will now store dictionaries that include a 'user_id' and file path
-saved_podcasts_db = []
-next_id = 1
-# ------------------------------------
+# Initialize SavedPodcast model (MongoDB)
+saved_podcast_model = SavedPodcast(db_instance.get_db())
 
 
 @podcast_bp.route('/generate', methods=['POST'])
@@ -23,7 +23,6 @@ next_id = 1
 @jwt_required()
 def generate_podcast_endpoint():
     # ... your existing generate code is perfect, no changes needed inside ...
-    global next_id
     current_user_id = get_jwt_identity()
     notes_text = request.form.get('notes_text')
     file = request.files.get('file') or request.files.get('file ')
@@ -41,27 +40,30 @@ def generate_podcast_endpoint():
 
         if status_code != 200:
             return jsonify(result), status_code
-
         # NEW: Save the podcast if requested
+        send_path = result['path']
         if should_save:
             # Create a permanent path for the saved file
-            permanent_filename = f"{current_user_id}_{next_id}_{result['filename']}"
+            # Use ObjectId-based storage; filename includes user id and timestamp
+            timestamp = int(datetime.datetime.utcnow().timestamp())
+            permanent_filename = f"{current_user_id}_{timestamp}_{result['filename']}"
             permanent_path = os.path.join(SAVED_PODCASTS_DIR, permanent_filename)
             shutil.move(result['path'], permanent_path) # Move from temp to permanent
 
-            # Save metadata to our in-memory DB
-            new_podcast = {
-                "id": next_id,
-                "user_id": current_user_id,
-                "title": result['filename'], # Using filename as title, can be changed
-                "date": datetime.datetime.now().isoformat(),
-                "path": permanent_path # Store the path to the file
-            }
-            saved_podcasts_db.append(new_podcast)
-            next_id += 1
-            print(f"[LOG] Saved new podcast for user {current_user_id}: {permanent_filename}")
+            # Save metadata to MongoDB including the path
+            meta_res = saved_podcast_model.create_saved_podcast_metadata(
+                user_id=current_user_id,
+                title=result['filename'],
+                date=datetime.datetime.utcnow().isoformat(),
+                preview=None,
+                path=permanent_path
+            )
+            if not meta_res.get('success'):
+                print(f"[WARN] Failed to save podcast metadata for user {current_user_id}: {meta_res}")
+            # Update the path we'll send back to the client
+            send_path = permanent_path
 
-        return send_file(result['path'], as_attachment=True, download_name=result['filename'])
+        return send_file(send_path, as_attachment=True, download_name=result['filename'])
     except Exception as e:
         print(f"[ERROR] in generate_podcast_endpoint: {e}")
         return jsonify({"error": "An unexpected server error occurred."}), 500
@@ -71,61 +73,165 @@ def generate_podcast_endpoint():
 @podcast_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_all_podcasts():
-    # NEW: Get the ID of the user who is making the request
+    # Get the ID of the user who is making the request
     current_user_id = get_jwt_identity()
     print(f"[LOG] Request received to fetch podcasts for user: {current_user_id}")
-    
-    # NEW: Filter the database to only include podcasts from the current user
-    # We remove the 'path' from the response for security/cleanliness
-    user_podcasts = [
-        {k: v for k, v in p.items() if k != 'path'} for p in saved_podcasts_db if p.get('user_id') == current_user_id
-    ]
-    
-    return jsonify(user_podcasts), 200
+
+    try:
+        # Try querying by ObjectId first (common case when JWT stores ObjectId as string)
+        from bson import ObjectId
+        try:
+            docs = list(saved_podcast_model.collection.find({"user_id": ObjectId(current_user_id)}))
+        except Exception:
+            # Fallback to string comparison if user_id stored as string
+            docs = list(saved_podcast_model.collection.find({"user_id": str(current_user_id)}))
+    except Exception:
+        # If anything fails, return empty list
+        docs = []
+
+    # Clean documents for response
+    filtered = []
+    for d in docs:
+        try:
+            d['_id'] = str(d.get('_id'))
+            d.pop('path', None)
+            # Convert ObjectId user_id to string for client
+            if d.get('user_id') is not None:
+                d['user_id'] = str(d.get('user_id'))
+            filtered.append(d)
+        except Exception:
+            continue
+
+    return jsonify(filtered), 200
 
 
 # MODIFIED: This route is now protected and saves the user's ID
 @podcast_bp.route('/save', methods=['POST'])
 @jwt_required()
 def save_podcast_metadata():
-    global next_id
     data = request.get_json()
-    
-    # NEW: Get the ID of the user who is saving the podcast
+
+    # Get the ID of the user who is saving the podcast
     current_user_id = get_jwt_identity()
 
     if not data or 'title' not in data:
         return jsonify({"error": "Missing title in request"}), 400
-    
-    new_podcast = {
-        "id": next_id,
-        "user_id": current_user_id, # NEW: Tag the data with the user's ID
-        "title": data.get('title'),
-        "date": data.get('date'),
-        "preview": data.get('preview')
-    }
-    
-    saved_podcasts_db.append(new_podcast)
-    next_id += 1
-    
-    print(f"[LOG] Saved new podcast metadata for user {current_user_id}: {new_podcast['title']}")
-    return jsonify({"message": "Podcast metadata saved successfully", "podcast": new_podcast}), 201
+
+    res = saved_podcast_model.create_saved_podcast_metadata(
+        user_id=current_user_id,
+        title=data.get('title'),
+        date=data.get('date'),
+        preview=data.get('preview')
+    )
+
+    if res.get('success'):
+        return jsonify({"message": "Podcast metadata saved successfully", "podcast_id": res.get('saved_podcast_id')}), 201
+    else:
+        return jsonify({"error": "Failed to save podcast metadata", "details": res.get('message')}), 500
+
+
+# Authenticated download (attachment)
+@podcast_bp.route('/download/<string:podcast_id>', methods=['GET'])
+@jwt_required()
+def download_podcast(podcast_id):
+    current_user_id = get_jwt_identity()
+    try:
+        from bson import ObjectId
+        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
+    except Exception:
+        return jsonify({"error": "Invalid podcast id"}), 400
+
+    if not doc:
+        return jsonify({"error": "Podcast not found"}), 404
+
+    if str(doc.get('user_id')) != str(current_user_id):
+        return jsonify({"error": "Access denied"}), 403
+
+    path = doc.get('path')
+    if not path or not os.path.exists(path):
+        return jsonify({"error": "Podcast file not found on server"}), 404
+
+    filename = os.path.basename(path)
+    return send_file(path, as_attachment=True, download_name=filename)
+
+
+# Create a public share link (authenticated)
+@podcast_bp.route('/share/<string:podcast_id>', methods=['POST'])
+@jwt_required()
+def share_podcast(podcast_id):
+    current_user_id = get_jwt_identity()
+    try:
+        from bson import ObjectId
+        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
+    except Exception:
+        return jsonify({"error": "Invalid podcast id"}), 400
+
+    if not doc:
+        return jsonify({"error": "Podcast not found"}), 404
+
+    if str(doc.get('user_id')) != str(current_user_id):
+        return jsonify({"error": "Access denied"}), 403
+
+    # create a token and expiry (7 days)
+    token = str(uuid.uuid4())
+    expires = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+
+    try:
+        saved_podcast_model.collection.update_one(
+            {"_id": ObjectId(podcast_id)},
+            {"$set": {"share_token": token, "share_expires": expires}}
+        )
+    except Exception as e:
+        return jsonify({"error": "Failed to create share link", "details": str(e)}), 500
+
+    # build share URL
+    base = request.host_url.rstrip('/')
+    share_url = f"{base}/api/podcast/shared/{token}"
+    return jsonify({"share_url": share_url, "expires_at": expires.isoformat()}), 200
+
+
+# Public shared access (no auth required)
+@podcast_bp.route('/shared/<string:token>', methods=['GET'])
+def shared_podcast(token):
+    try:
+        doc = saved_podcast_model.collection.find_one({"share_token": token})
+    except Exception:
+        return jsonify({"error": "Invalid token"}), 400
+
+    if not doc:
+        return jsonify({"error": "Shared podcast not found"}), 404
+
+    expires = doc.get('share_expires')
+    if not expires or expires < datetime.datetime.utcnow():
+        return jsonify({"error": "Share link expired"}), 410
+
+    path = doc.get('path')
+    if not path or not os.path.exists(path):
+        return jsonify({"error": "Podcast file not found on server"}), 404
+
+    filename = os.path.basename(path)
+    return send_file(path, as_attachment=True, download_name=filename)
 
 # NEW: Route to stream a saved podcast
-@podcast_bp.route('/play/<int:podcast_id>', methods=['GET'])
+@podcast_bp.route('/play/<string:podcast_id>', methods=['GET'])
 @jwt_required()
 def play_podcast(podcast_id):
     current_user_id = get_jwt_identity()
-    
-    # Find the podcast in the database
-    podcast_to_play = next((p for p in saved_podcasts_db if p['id'] == podcast_id), None)
 
-    # Check if the podcast exists and belongs to the current user
-    if not podcast_to_play or podcast_to_play.get('user_id') != current_user_id:
-        return jsonify({"error": "Podcast not found or access denied"}), 404
+    try:
+        from bson import ObjectId
+        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
+    except Exception:
+        return jsonify({"error": "Invalid podcast id"}), 400
 
-    # Check if the file exists on disk
-    if not os.path.exists(podcast_to_play['path']):
+    if not doc:
+        return jsonify({"error": "Podcast not found"}), 404
+
+    if str(doc.get('user_id')) != str(current_user_id):
+        return jsonify({"error": "Access denied"}), 403
+
+    path = doc.get('path')
+    if not path or not os.path.exists(path):
         return jsonify({"error": "Podcast file not found on server"}), 404
 
-    return send_file(podcast_to_play['path'], as_attachment=False)
+    return send_file(path, as_attachment=False)

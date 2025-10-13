@@ -8,6 +8,7 @@ import SignupPage from './components/SignupPage';
 import PodcastPage from './components/PodcastPage';
 import NotesPage from './components/NotesPage';
 import VideosPage from './components/VideosPage';
+import VisualsPage from './components/VisualsPage';
 import SettingsPage from './components/SettingsPage';
 import VerticalNavbar from './components/VerticalNavbar';
 
@@ -79,6 +80,22 @@ function App() {
                 <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
                   <Sidebar show={sidebarVisible} />
                   <VideosPage />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/visuals"
+          element={
+            isLoggedIn ? (
+              <div className="app-layout">
+                <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                  <Sidebar show={sidebarVisible} />
+                  <VisualsPage />
                 </div>
               </div>
             ) : (

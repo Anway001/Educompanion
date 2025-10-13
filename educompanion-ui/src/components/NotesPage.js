@@ -5,6 +5,8 @@ const NotesPage = () => {
   const [notes, setNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentAudioUrl, setCurrentAudioUrl] = useState('');
+  const [playingId, setPlayingId] = useState(null);
 
   const fetchNotes = async () => {
     try {
@@ -40,6 +42,52 @@ const NotesPage = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  const handlePlay = async (note) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) throw new Error('Please log in to play podcasts');
+
+      const id = note.id || note._id || note.saved_podcast_id;
+      if (!id) throw new Error('Invalid podcast id');
+
+      // fetch the protected stream endpoint as blob
+      const res = await fetch(`http://localhost:8080/api/podcast/play/${id}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        // try to parse json or text for a helpful error message
+        let bodyText = '';
+        try {
+          const json = await res.json();
+          bodyText = json.message || json.error || JSON.stringify(json);
+        } catch (e) {
+          try { bodyText = await res.text(); } catch (e2) { bodyText = ''; }
+        }
+        const msg = `Failed to fetch podcast audio (status: ${res.status}) ${bodyText}`;
+        console.error(msg);
+        throw new Error(msg);
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      // revoke previous
+      if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
+      setCurrentAudioUrl(url);
+      setPlayingId(id);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // cleanup object URL on unmount or when url changes
+  useEffect(() => {
+    return () => {
+      if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
+    };
+  }, [currentAudioUrl]);
 
   return (
     <div className="notes-content">
@@ -86,8 +134,13 @@ const NotesPage = () => {
               <p>{note.preview}</p>
             </div>
             <div className="card-actions">
-              <button className="btn btn-small btn-primary">Edit</button>
-              <button className="btn btn-small btn-secondary">Share</button>
+              <button className="btn btn-small btn-primary" onClick={() => handlePlay(note)}>
+                {playingId === (note.id || note._id || note.saved_podcast_id) ? 'Playing' : 'Play'}
+              </button>
+              {/* If this note is currently playing render an audio element */}
+              {playingId === (note.id || note._id || note.saved_podcast_id) && currentAudioUrl && (
+                <audio controls src={currentAudioUrl} className="podcast-player-inline" />
+              )}
             </div>
           </div>
         ))}
