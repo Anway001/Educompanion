@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/MainContent.css';
+import UserBadge from './UserBadge';
 
 const MainContent = () => {
   const [inputValue, setInputValue] = useState('');
   const [user, setUser] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // dropdown state removed — user badge provides account details across pages
   const [chatMessages, setChatMessages] = useState([]);
   const navigate = useNavigate();
 
@@ -75,13 +76,7 @@ const MainContent = () => {
     setChatMessages((m) => [...m, { from: 'bot', text: reply }]);
   };
 
-  const handleLogout = () => {
-    // ✅ Clear user session and redirect immediately
-    localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
-    
-    window.location.href = "/login";
-  };
+  // logout handled by profile/settings; MainContent does not manage logout directly
 
   return (
     <div className="main-content">
@@ -94,18 +89,8 @@ const MainContent = () => {
       </div>
 
       <header className="main-header">
-        <div 
-          className="user-info" 
-          onClick={() => setDropdownOpen(!dropdownOpen)} 
-          style={{ position: "relative", cursor: "pointer" }}
-        >
-          <span>{user && `${user.first_name} ${user.last_name}`}</span>
-          
-          {dropdownOpen && (
-            <div className="dropdown-menu">
-              <button onClick={handleLogout}>Logout</button>
-            </div>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+          <UserBadge />
         </div>
       </header>
 

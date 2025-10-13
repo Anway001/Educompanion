@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/SettingsPage.css';
+import UserBadge from './UserBadge';
 
 const SettingsPage = () => {
   return (
@@ -13,8 +14,9 @@ const SettingsPage = () => {
       </div>
 
       <header className="settings-header">
-        <div className="user-info">
-          <span>Ananda Faris</span>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <div />
+          <UserBadge />
         </div>
       </header>
       <div className="welcome-section">

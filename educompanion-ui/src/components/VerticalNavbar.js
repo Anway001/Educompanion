@@ -48,8 +48,9 @@ const VerticalNavbar = ({ onToggleSidebar }) => {
           </li>
           <li>
             <NavLink to="/visuals" className="nav-link" title="Visuals">
+              {/* improved Visuals icon (image/photo) */}
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
+                <path d="M21 19V5a2 2 0 0 0-2-2H5C3.9 3 3 3.9 3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3 3.5-4.5L19 18H5l3.5-4.5z" />
               </svg>
             </NavLink>
           </li>

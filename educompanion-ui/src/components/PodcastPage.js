@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/PodcastPage.css';
+import UserBadge from './UserBadge';
 
 const PodcastPage = () => {
   const [uploadMode, setUploadMode] = useState('upload');
@@ -128,8 +129,9 @@ const PodcastPage = () => {
         <div className="floating-shape shape-4"></div>
       </div>
       <header className="podcast-header">
-        <div className="user-info">
-          <span>Ananda Faris</span>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <div />
+          <UserBadge />
         </div>
       </header>
       <div className="welcome-section">

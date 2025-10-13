@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/VideosPage.css';
+import UserBadge from './UserBadge';
 
 const VideosPage = () => {
   const [uploadMode, setUploadMode] = useState('upload');
@@ -31,8 +32,9 @@ const VideosPage = () => {
       </div>
 
       <header className="videos-header">
-        <div className="user-info">
-          <span>Ananda Faris</span>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <div />
+          <UserBadge />
         </div>
       </header>
       

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/NotesPage.css';
+import UserBadge from './UserBadge';
 
 const NotesPage = () => {
   const [notes, setNotes] = useState([]);
@@ -99,8 +100,9 @@ const NotesPage = () => {
         <div className="floating-shape shape-3"></div>
       </div>
       <header className="notes-header">
-        <div className="user-info">
-          <span>Ananda Faris</span>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <div />
+          <UserBadge />
         </div>
       </header>
       <div className="welcome-section">
@@ -125,7 +127,7 @@ const NotesPage = () => {
             <p className="loading-message">No podcasts saved yet. Go create one!</p>
         )}
         {!isLoading && !error && notes.map((note) => (
-          <div key={note.id} className="content-card glow-hover flash-effect">
+          <div key={note.id || note._id || note.saved_podcast_id} className="content-card glow-hover flash-effect">
             <div className="card-header">
               <h3>{note.title}</h3>
               <span className="date">{note.date}</span>
