@@ -24,11 +24,13 @@ def create_app():
     from routes.user import user_bp
     from routes.podcast import podcast_bp
     from routes.visuals import visuals_bp
+    from routes.chat import chat_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(user_bp, url_prefix='/api/user')
     app.register_blueprint(podcast_bp, url_prefix='/api/podcast')
     app.register_blueprint(visuals_bp, url_prefix='/api/visuals')
+    app.register_blueprint(chat_bp, url_prefix='/api/chat')
 
     print("Registered Blueprints:")
     for bp_name, bp in app.blueprints.items():

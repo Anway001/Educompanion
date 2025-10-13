@@ -10,6 +10,7 @@ import NotesPage from './components/NotesPage';
 import VideosPage from './components/VideosPage';
 import VisualsPage from './components/VisualsPage';
 import SettingsPage from './components/SettingsPage';
+import ChatPage from './components/ChatPage';
 import VerticalNavbar from './components/VerticalNavbar';
 
 function App() {
@@ -48,6 +49,22 @@ function App() {
                 <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
                   <Sidebar show={sidebarVisible} />
                   <PodcastPage />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            isLoggedIn ? (
+              <div className="app-layout">
+                <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                  <Sidebar show={sidebarVisible} />
+                  <ChatPage />
                 </div>
               </div>
             ) : (
