@@ -377,3 +377,84 @@
   transform: translateY(-2px);
 }
 
+/* === VISUALS GENERATOR SECTION === */
+
+.visuals-results {
+  margin-top: 50px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.visuals-results h3 {
+  color: #ffffff;
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* Responsive grid for visuals */
+.visuals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  align-items: start;
+  padding: 1rem;
+}
+
+/* Image cards */
+.visuals-grid img {
+  width: 320px;
+  max-width: 90%;
+  height: auto;
+  border-radius: 16px;
+  background-color: #1e1e1e;
+  border: 2px solid rgba(0, 184, 148, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s ease-in-out;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.visuals-grid img:hover {
+  transform: scale(1.05);
+  border-color: #00b894;
+  box-shadow: 0 10px 28px rgba(0, 184, 148, 0.4);
+}
+
+/* Divider */
+.divider {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,184,148,0.3), rgba(9,132,227,0.3));
+  margin: 50px 0;
+}
+
+/* Extracted Text Section */
+.extracted-text {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #333;
+  text-align: left;
+  color: #e0e0e0;
+  font-size: 15px;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.extracted-text h3 {
+  color: #00b894;
+  font-size: 22px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* Make visuals scale down on smaller screens */
+@media (max-width: 768px) {
+  .visuals-grid img {
+    width: 90%;
+  }
+}
