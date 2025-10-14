@@ -232,6 +232,51 @@ def play_podcast(podcast_id):
 
     path = doc.get('path')
     if not path or not os.path.exists(path):
+        print(f"[ERROR] Podcast path does not exist: {path}")
+        return jsonify({"error": "Podcast file not found on server"}), 404
+
+    # Send the file for streaming
+    return send_file(path, as_attachment=False)
+
+    current_user_id = get_jwt_identity()
+
+    try:
+        from bson import ObjectId
+        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
+    except Exception:
+        return jsonify({"error": "Invalid podcast id"}), 400
+
+    if not doc:
+        return jsonify({"error": "Podcast not found"}), 404
+
+    if str(doc.get('user_id')) != str(current_user_id):
+        return jsonify({"error": "Access denied"}), 403
+
+    path = doc.get('path')
+    if not path or not os.path.exists(path):
+        print(f"[ERROR] Podcast path does not exist: {path}")
+        return jsonify({"error": "Podcast file not found on server"}), 404
+
+    directory = os.path.dirname(path)
+    filename = os.path.basename(path)
+    return send_from_directory(directory, filename, as_attachment=False)
+
+    current_user_id = get_jwt_identity()
+
+    try:
+        from bson import ObjectId
+        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
+    except Exception:
+        return jsonify({"error": "Invalid podcast id"}), 400
+
+    if not doc:
+        return jsonify({"error": "Podcast not found"}), 404
+
+    if str(doc.get('user_id')) != str(current_user_id):
+        return jsonify({"error": "Access denied"}), 403
+
+    path = doc.get('path')
+    if not path or not os.path.exists(path):
         return jsonify({"error": "Podcast file not found on server"}), 404
 
     return send_file(path, as_attachment=False)

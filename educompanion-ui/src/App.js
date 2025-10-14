@@ -12,7 +12,7 @@ import VisualsPage from './components/VisualsPage';
 import SettingsPage from './components/SettingsPage';
 import ChatPage from './components/ChatPage';
 import VerticalNavbar from './components/VerticalNavbar';
-
+import SummarizerPage from './components/SummarizerPage';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -49,6 +49,22 @@ function App() {
                 <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
                   <Sidebar show={sidebarVisible} />
                   <PodcastPage />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/summarize"
+          element={
+            isLoggedIn ? (
+              <div className="app-layout">
+                <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                  <Sidebar show={sidebarVisible} />
+                  <SummarizerPage />
                 </div>
               </div>
             ) : (
