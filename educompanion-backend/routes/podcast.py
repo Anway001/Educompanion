@@ -93,6 +93,11 @@ def get_all_podcasts():
     filtered = []
     for d in docs:
         try:
+            # Skip entries with no path
+            path = d.get('path')
+            if not path or not isinstance(path, str) or not os.path.exists(path):
+                continue
+                
             d['_id'] = str(d.get('_id'))
             d.pop('path', None)
             # Convert ObjectId user_id to string for client
@@ -117,11 +122,44 @@ def save_podcast_metadata():
     if not data or 'title' not in data:
         return jsonify({"error": "Missing title in request"}), 400
 
+    # START MODIFICATION: Handle file moving
+    filename = data.get('filename')
+    permanent_path = None
+    
+    if filename:
+        # Determine paths
+        # generated/ is one level up from routes/
+        generated_dir = os.path.join(os.path.dirname(__file__), '..', 'generated')
+        source_path = os.path.join(generated_dir, filename)
+        
+        # Security check: prevent directory traversal
+        if os.path.basename(source_path) != filename:
+             return jsonify({"error": "Invalid filename"}), 400
+
+        if os.path.exists(source_path):
+            # Create unique name for permanent storage
+            timestamp = int(datetime.datetime.utcnow().timestamp())
+            permanent_filename = f"{current_user_id}_{timestamp}_{filename}"
+            permanent_path = os.path.join(SAVED_PODCASTS_DIR, permanent_filename)
+            
+            try:
+                shutil.move(source_path, permanent_path)
+            except Exception as e:
+                print(f"[ERROR] Failed to move file on save: {e}")
+                permanent_path = None # Fallback to no file linked
+        else:
+            print(f"[WARN] File to save not found at {source_path}")
+            # We continue saving metadata even if file is missing/expired, 
+            # though ideally we should probably error. For now, let's allow it 
+            # to avoid breaking the UX if the user waits too long.
+    # END MODIFICATION
+
     res = saved_podcast_model.create_saved_podcast_metadata(
         user_id=current_user_id,
         title=data.get('title'),
         date=data.get('date'),
-        preview=data.get('preview')
+        preview=data.get('preview'),
+        path=permanent_path # Pass the new path
     )
 
     if res.get('success'):
@@ -238,45 +276,3 @@ def play_podcast(podcast_id):
     # Send the file for streaming
     return send_file(path, as_attachment=False)
 
-    current_user_id = get_jwt_identity()
-
-    try:
-        from bson import ObjectId
-        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
-    except Exception:
-        return jsonify({"error": "Invalid podcast id"}), 400
-
-    if not doc:
-        return jsonify({"error": "Podcast not found"}), 404
-
-    if str(doc.get('user_id')) != str(current_user_id):
-        return jsonify({"error": "Access denied"}), 403
-
-    path = doc.get('path')
-    if not path or not os.path.exists(path):
-        print(f"[ERROR] Podcast path does not exist: {path}")
-        return jsonify({"error": "Podcast file not found on server"}), 404
-
-    directory = os.path.dirname(path)
-    filename = os.path.basename(path)
-    return send_from_directory(directory, filename, as_attachment=False)
-
-    current_user_id = get_jwt_identity()
-
-    try:
-        from bson import ObjectId
-        doc = saved_podcast_model.collection.find_one({"_id": ObjectId(podcast_id)})
-    except Exception:
-        return jsonify({"error": "Invalid podcast id"}), 400
-
-    if not doc:
-        return jsonify({"error": "Podcast not found"}), 404
-
-    if str(doc.get('user_id')) != str(current_user_id):
-        return jsonify({"error": "Access denied"}), 403
-
-    path = doc.get('path')
-    if not path or not os.path.exists(path):
-        return jsonify({"error": "Podcast file not found on server"}), 404
-
-    return send_file(path, as_attachment=False)

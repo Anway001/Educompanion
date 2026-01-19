@@ -1,0 +1,90 @@
+advanced_animation:
+  effects:
+    highlight_keywords: true
+    typewriter_effect: false
+  enable_manim: false
+  scene_transitions: true
+  visual_elements:
+    enable_charts: false
+    enable_diagrams: false
+    enable_icons: false
+animation:
+  background_color:
+  - 255
+  - 255
+  - 255
+  font:
+    family: null
+    line_spacing: 8
+    size: 36
+  fps: 24
+  resolution:
+    height: 720
+    width: 1280
+  slide_duration: 4.0
+  slides:
+    animation_style: fade
+    enable_animations: true
+    margin: 40
+    max_chars_per_slide: 220
+  text_color:
+  - 0
+  - 0
+  - 0
+  transition_duration: 0.5
+logging:
+  enable_console: true
+  file: text_to_animation.log
+  level: INFO
+nlp:
+  chunk_size: 1000
+  enable_keyword_extraction: true
+  language_detection: true
+  max_summary_length: 130
+  min_summary_length: 30
+  model: sshleifer/distilbart-cnn-12-6
+ocr:
+  confidence_threshold: 0.7
+  gpu_enabled: false
+  languages:
+  - en
+  - es
+  - fr
+  - de
+  preprocessing:
+    contrast_enhancement: true
+    denoise: true
+    gaussian_blur: true
+    resize_factor: 2.0
+output:
+  audio_codec: aac
+  keep_intermediate_files: false
+  quality: high
+  temp_directory: ttm_tmp
+  video_codec: libx264
+performance:
+  batch_processing: false
+  cache_models: true
+  level: fast
+  max_workers: 4
+  memory_limit_gb: 8
+  mixed_precision: true
+  optimize_for_speed: true
+  preload_models: true
+  use_gpu: false
+tts:
+  azure_key: null
+  language: en
+  service: gtts
+  speed: 1.0
+  voice_id: null
+web:
+  allowed_formats:
+  - png
+  - jpg
+  - jpeg
+  - pdf
+  enable_real_time_preview: true
+  max_file_size_mb: 10
+  show_intermediate_results: true
+  title: "Handwritten Notes \xE2\u2020\u2019 Animated Explainer"

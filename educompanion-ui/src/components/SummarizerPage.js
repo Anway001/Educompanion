@@ -6,6 +6,7 @@ const SummarizerPage = () => {
   const [uploadMode, setUploadMode] = useState('upload');
   const [selectedFile, setSelectedFile] = useState(null);
   const [inputText, setInputText] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
@@ -23,6 +24,8 @@ const SummarizerPage = () => {
   const handleDragOver = (e) => e.preventDefault();
 
   const handleTextChange = (e) => setInputText(e.target.value);
+
+  const handleYoutubeUrlChange = (e) => setYoutubeUrl(e.target.value);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -45,6 +48,14 @@ const SummarizerPage = () => {
         return;
       }
       formData.append('text', inputText);
+    } else if (uploadMode === 'youtube') {
+      if (!youtubeUrl.trim()) {
+        alert('Please enter a YouTube URL.');
+        setIsLoading(false);
+        return;
+      }
+      formData.append('youtube_url', youtubeUrl);
+      setStatusMessage('Downloading and transcribing YouTube video...');
     }
 
     try {
@@ -111,6 +122,7 @@ const SummarizerPage = () => {
             onClick={() => {
               setUploadMode('upload');
               setInputText('');
+              setYoutubeUrl('');
             }}
           >
             Upload File
@@ -120,9 +132,20 @@ const SummarizerPage = () => {
             onClick={() => {
               setUploadMode('text');
               setSelectedFile(null);
+              setYoutubeUrl('');
             }}
           >
             Type Text
+          </button>
+          <button
+            className={`toggle-btn ${uploadMode === 'youtube' ? 'active' : ''}`}
+            onClick={() => {
+              setUploadMode('youtube');
+              setSelectedFile(null);
+              setInputText('');
+            }}
+          >
+            YouTube URL
           </button>
         </div>
 
@@ -154,6 +177,19 @@ const SummarizerPage = () => {
               className="notes-textarea"
               value={inputText}
               onChange={handleTextChange}
+            />
+          </div>
+        )}
+
+        {uploadMode === 'youtube' && (
+          <div className="notes-input-area">
+            <input
+              type="text"
+              placeholder="Enter YouTube URL (e.g., https://www.youtube.com/watch?v=...)"
+              className="notes-textarea"
+              style={{ height: '60px', padding: '15px' }}
+              value={youtubeUrl}
+              onChange={handleYoutubeUrlChange}
             />
           </div>
         )}

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/PodcastPage.css';
 import UserBadge from './UserBadge';
+import { usePodcastContext } from '../contexts/PodcastContext';
 
 const PodcastPage = () => {
-  const [uploadMode, setUploadMode] = useState('upload');
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [notes, setNotes] = useState('');
-  const [length, setLength] = useState('medium');
-  const [isLoading, setIsLoading] = useState(false);
-  const [podcastUrl, setPodcastUrl] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
+  const {
+    uploadMode, setUploadMode,
+    selectedFiles, setSelectedFiles, // We try to keep this, but if page unmounts file input value is lost. 
+    notes, setNotes,
+    length, setLength,
+    isLoading, setIsLoading,
+    podcastUrl, setPodcastUrl,
+    statusMessage, setStatusMessage,
+    generatedFilename, setGeneratedFilename
+  } = usePodcastContext();
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -25,7 +29,7 @@ const PodcastPage = () => {
   const handleDragOver = (event) => {
     event.preventDefault();
   };
-  
+
   const handleNotesChange = (event) => {
     setNotes(event.target.value);
   };
@@ -34,7 +38,7 @@ const PodcastPage = () => {
     setIsLoading(true);
     setPodcastUrl('');
     setStatusMessage('Starting podcast generation...');
-    
+
     const formData = new FormData();
     formData.append('length', length);
 
@@ -70,12 +74,25 @@ const PodcastPage = () => {
         },
         body: formData,
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to generate podcast.');
       }
-      
+
+      // MODIFIED: Extract filename from headers to save it later
+      const disposition = response.headers.get('Content-Disposition');
+      let filename = null;
+      if (disposition && disposition.indexOf('filename=') !== -1) {
+        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+      console.log("Captured generated filename:", filename);
+      setGeneratedFilename(filename);
+
       setStatusMessage('Generating audio... this can take a few minutes.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -98,11 +115,18 @@ const PodcastPage = () => {
         throw new Error("Authentication Error. Please log in again.");
       }
 
-      const title = selectedFiles.length > 0 
-        ? selectedFiles[0].name.replace(/\.[^/.]+$/, "") 
+      const title = selectedFiles.length > 0
+        ? selectedFiles[0].name.replace(/\.[^/.]+$/, "")
         : "Podcast from Notes";
       const date = new Date().toISOString().split('T')[0];
-      const metadata = { title, date, preview: "An AI-generated podcast." };
+
+      // MODIFIED: Send the filename to the backend so it can link the file
+      const metadata = {
+        title,
+        date,
+        preview: "An AI-generated podcast.",
+        filename: generatedFilename // Pass the captured filename
+      };
 
       await fetch('http://localhost:8080/api/podcast/save', {
         method: 'POST',
@@ -113,6 +137,7 @@ const PodcastPage = () => {
         body: JSON.stringify(metadata),
       });
       setStatusMessage('Podcast saved to your notes!');
+      alert("Podcast saved successfully to your library!");
     } catch (saveError) {
       setStatusMessage('Failed to save podcast to notes.');
     }
@@ -129,7 +154,7 @@ const PodcastPage = () => {
         <div className="floating-shape shape-4"></div>
       </div>
       <header className="podcast-header">
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div />
           <UserBadge />
         </div>

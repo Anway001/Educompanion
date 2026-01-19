@@ -13,6 +13,7 @@ import SettingsPage from './components/SettingsPage';
 import ChatPage from './components/ChatPage';
 import VerticalNavbar from './components/VerticalNavbar';
 import SummarizerPage from './components/SummarizerPage';
+import { PodcastProvider } from './contexts/PodcastContext';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -31,145 +32,148 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/login"
-          element={isLoggedIn ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />}
-        />
-        <Route
-          path="/signup"
-          element={isLoggedIn ? <Navigate to="/" /> : <SignupPage onSignup={handleSignup} />}
-        />
-        <Route
-          path="/podcast"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <PodcastPage />
+      <PodcastProvider>
+        <Routes>
+          <Route
+            path="/login"
+            element={isLoggedIn ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />}
+          />
+          <Route
+            path="/signup"
+            element={isLoggedIn ? <Navigate to="/" /> : <SignupPage onSignup={handleSignup} />}
+          />
+          <Route
+            path="/podcast"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <PodcastPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/summarize"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <SummarizerPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/summarize"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <SummarizerPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/chat"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <ChatPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <ChatPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/notes"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <NotesPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/notes"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <NotesPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/videos"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <VideosPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/videos"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <VideosPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/visuals"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <VisualsPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/visuals"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <VisualsPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <SettingsPage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <SettingsPage />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/*"
-          element={
-            isLoggedIn ? (
-              <div className="app-layout">
-                <VerticalNavbar onToggleSidebar={toggleSidebar} />
-                <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
-                  <Sidebar show={sidebarVisible} />
-                  <MainContent />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/*"
+            element={
+              isLoggedIn ? (
+                <div className="app-layout">
+                  <VerticalNavbar onToggleSidebar={toggleSidebar} />
+                  <div className={`app ${sidebarVisible ? 'sidebar-open' : ''}`}>
+                    <Sidebar show={sidebarVisible} />
+                    <MainContent />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-      </Routes>
-    </Router>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+        </Routes>
+
+      </PodcastProvider>
+    </Router >
   );
 }
 

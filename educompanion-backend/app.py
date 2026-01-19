@@ -16,7 +16,7 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 3600))
     
     # Initialize extensions
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": "*", "expose_headers": ["Content-Disposition"]}})
     JWTManager(app)
     
     # Import and register blueprints
@@ -26,6 +26,7 @@ def create_app():
     from routes.visuals import visuals_bp
     from routes.chat import chat_bp
     from routes.summarizer_routes import summarizer_bp
+    from text_to_animation.routes import text_to_animation_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(user_bp, url_prefix='/api/user')
@@ -33,6 +34,7 @@ def create_app():
     app.register_blueprint(visuals_bp, url_prefix='/api/visuals')
     app.register_blueprint(chat_bp, url_prefix='/api/chat')
     app.register_blueprint(summarizer_bp, url_prefix='/api/summarizer')
+    app.register_blueprint(text_to_animation_bp, url_prefix='/api/text-to-animation')
 
     print("Registered Blueprints:")
     for bp_name, bp in app.blueprints.items():

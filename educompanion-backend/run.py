@@ -17,7 +17,7 @@ def main():
     app = create_app()
 
     
-    CORS(app)
+
     
     # Get configuration from environment
     host = os.getenv('HOST', '0.0.0.0')

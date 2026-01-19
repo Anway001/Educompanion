@@ -10,7 +10,7 @@ from transformers import pipeline
 import easyocr
 import torch
 import random
-
+from utils.tts_worker import _worker_synthesize
 # =========================================================================
 # 1. Configuration and Initialization
 # =========================================================================
@@ -119,10 +119,11 @@ def summarize_text(text):
         print("[LOG] Text is too short, skipping summarization.")
         return text
     try:
-        max_chars = 4000 
+        max_chars = 3000 # Reduced from 4000 to avoid token limit issues (max 1024 tokens)
         truncated_text = text[:max_chars]
         print(f"[LOG] Summarizing text (truncated to {max_chars} chars)...")
-        summary = summarizer(truncated_text, max_length=200, min_length=50, do_sample=False)
+        # Added truncation=True to explicitly handle long sequences if they still exceed limits
+        summary = summarizer(truncated_text, max_length=200, min_length=50, do_sample=False, truncation=True)
         summary_text = summary[0]['summary_text']
         print(f"[LOG] Summarization complete. New length: {len(summary_text)}")
         return summary_text
@@ -148,13 +149,47 @@ def generate_podcast_script_with_llm(notes_text, length='medium'):
     {notes_text}
     ---
     """
-    try:
-        response = ollama.generate(model="llama3", prompt=prompt)
-        print("[LOG] LLM script generation successful.")
-        return response['response']
-    except Exception as e:
-        print(f"[LOG] ERROR: LLM script generation failed: {e}")
-        return None
+    models_to_try = ["llama3", "qwen2:1.5b", "tinyllama"]
+    
+    for model_name in models_to_try:
+        print(f"[LOG] Attempting to generate with model: {model_name}")
+        try:
+            response = ollama.generate(model=model_name, prompt=prompt)
+            print(f"[LOG] LLM script generation successful using {model_name}.")
+            return response['response']
+        except ollama.ResponseError as e:
+            if e.status_code == 404:
+                print(f"[LOG] Model '{model_name}' not found. Attempting to pull...")
+                try:
+                    # Stream the pull progress
+                    current_digest = None
+                    print(f"[LOG] Pulling {model_name}...")
+                    for progress in ollama.pull(model_name, stream=True):
+                        digest = progress.get('digest', '')
+                        if digest != current_digest and digest:
+                            print(f"[LOG] Pulling layer: {digest}")
+                            current_digest = digest
+                        if progress.get('completed'):
+                             print(f"[LOG] Layer completed: {digest}")
+                    
+                    print(f"[LOG] Model '{model_name}' pulled successfully. Retrying generation...")
+                    response = ollama.generate(model=model_name, prompt=prompt)
+                    print(f"[LOG] LLM script generation successful using {model_name}.")
+                    return response['response']
+                except Exception as pull_error:
+                    print(f"[LOG] ERROR: Failed to pull model '{model_name}': {pull_error}")
+                    # Continue to next model in list
+                    continue
+            else:
+                print(f"[LOG] ERROR: Generation failed with {model_name}: {e}")
+                print("[LOG] Trying next model...")
+                continue # Try next model on 500 or other errors (like OOM)
+        except Exception as e:
+            print(f"[LOG] ERROR: LLM script generation failed with {model_name}: {e}")
+            continue
+
+    print("[LOG] CRITICAL: All models failed to generate script.")
+    return None
 
 def parse_script(script_text):
     print("[LOG] STEP 3: Parsing the generated script...")
@@ -170,17 +205,7 @@ def parse_script(script_text):
         print("[LOG] ERROR: Parsing failed.")
         return None
 
-def _worker_synthesize(text, voice_id, temp_wav_path):
-    try:
-        engine = pyttsx3.init()
-        engine.setProperty('voice', voice_id)
-        engine.setProperty('rate', 155)
-        engine.save_to_file(text, temp_wav_path)
-        engine.runAndWait()
-        engine.stop()
-    except Exception as e:
-        print(f"TTS Worker failed: {e}")
-
+# Result of: moved to utils/tts_worker.py
 
 # MODIFIED: This function now uses absolute paths to be safer for multiprocessing.
 def create_multi_speaker_podcast(script, output_path):
